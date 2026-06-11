@@ -71,52 +71,49 @@ button{
 
 </div>
 
-<script>
+<script type="module">
 
-let numbers = JSON.parse(localStorage.getItem("numbers")) || [];
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-function add(){
+import {
+  getFirestore,
+  collection,
+  addDoc
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAI-3fvofgJaHOo1cGdLxkH0ru6lT_mOUo",
+  authDomain: "draw-657ed.firebaseapp.com",
+  projectId: "draw-657ed",
+  storageBucket: "draw-657ed.firebasestorage.app",
+  messagingSenderId: "353519223245",
+  appId: "1:353519223245:web:95e5e38329d99db2b40484",
+  measurementId: "G-Z6JJGXCV11"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+window.add = async function(){
 
   let val = document.getElementById("num").value.trim();
 
   if(val.length !== 6 || isNaN(val)){
-    alert("6 digits only");
-    return;
+      alert("6 digits only");
+      return;
   }
 
-  numbers.push(val);
-
-  localStorage.setItem("numbers", JSON.stringify(numbers));
-
-  document.getElementById("num").value = "";
-
-  render();
-
-}
-
-function render(){
-
-  let list = document.getElementById("list");
-
-  list.innerHTML = "";
-
-  numbers.forEach(n => {
-
-    let div = document.createElement("div");
-
-    div.className = "item";
-
-    div.innerText = n;
-
-    list.appendChild(div);
-
+  await addDoc(collection(db,"numbers"),{
+      number: val,
+      created: Date.now()
   });
 
+  document.getElementById("num").value="";
+
+  alert("Number Added");
+
 }
 
-render();
-
 </script>
-
 </body>
 </html>
