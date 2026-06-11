@@ -300,23 +300,58 @@ button:active{
 
 </div>
 
-<script>
+<script type="module">
 
-/* GET INPUT FROM STORAGE */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 
-function getNumbers(){
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  query,
+  orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-    return JSON.parse(
-        localStorage.getItem("numbers")
-    ) || [];
+const firebaseConfig = {
+  apiKey: "AIzaSyAI-3fvofgJaHOo1cGdLxkH0ru6lT_mOUo",
+  authDomain: "draw-657ed.firebaseapp.com",
+  projectId: "draw-657ed",
+  storageBucket: "draw-657ed.firebasestorage.app",
+  messagingSenderId: "353519223245",
+  appId: "1:353519223245:web:95e5e38329d99db2b40484",
+  measurementId: "G-Z6JJGXCV11"
+};
 
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* LOAD NUMBERS FROM FIREBASE */
+
+async function getNumbers(){
+
+    const q = query(
+        collection(db,"numbers"),
+        orderBy("created","asc")
+    );
+
+    const snap = await getDocs(q);
+
+    let arr = [];
+
+    snap.forEach(doc => {
+
+        arr.push(doc.data().number);
+
+    });
+
+    return arr;
 }
 
-/* CREATE 0-9 */
+/* CREATE 0-9 DIGITS */
 
 document.querySelectorAll(".numbers").forEach(box=>{
 
-    let html = "";
+    let html="";
 
     for(let r=0;r<30;r++){
 
@@ -332,13 +367,13 @@ document.querySelectorAll(".numbers").forEach(box=>{
 
 });
 
-/* DRAW FUNCTION */
+/* DRAW */
 
-function drawWinner(){
+window.drawWinner = async function(){
 
-    let numbers = getNumbers();
+    let numbers = await getNumbers();
 
-    if(numbers.length === 0){
+    if(numbers.length===0){
 
         alert("No numbers found");
         return;
@@ -346,26 +381,24 @@ function drawWinner(){
     }
 
     let winner =
-    numbers[numbers.length - 1]
+    numbers[numbers.length-1]
     .toString()
     .padStart(6,"0");
 
     let digits =
     document.querySelectorAll(".numbers");
 
-    /* SMOOTH SLOT MACHINE EFFECT */
-
     digits.forEach((d,index)=>{
 
-        let delay = index * 300;
+        let delay=index*300;
 
         setTimeout(()=>{
 
-            let position = 0;
+            let position=0;
 
-            let rolling = setInterval(()=>{
+            let rolling=setInterval(()=>{
 
-                position += 70;
+                position+=70;
 
                 d.style.transition =
                 "transform .08s cubic-bezier(.25,.46,.45,.94)";
@@ -373,22 +406,17 @@ function drawWinner(){
                 d.style.transform =
                 `translateY(-${position}px)`;
 
-                /* LOOP */
-
                 if(position >= 210 * 250){
 
-                    position = 0;
+                    position=0;
 
-                    d.style.transition = "none";
+                    d.style.transition="none";
 
-                    d.style.transform =
-                    `translateY(0px)`;
+                    d.style.transform="translateY(0px)";
 
                 }
 
             },25);
-
-            /* STOP EACH NUMBER */
 
             setTimeout(()=>{
 
