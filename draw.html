@@ -527,18 +527,19 @@ function animateConfetti(){
 
 animateConfetti();
 
-function showWinner(number){
+window.showWinner = function(number){
 
     document.getElementById("winnerNumber").innerText = number;
 
     document.getElementById("winnerPopup").style.display = "flex";
+
 }
 
-function closePopup(){
+window.closePopup = function(){
 
     document.getElementById("winnerPopup").style.display = "none";
-}
 
+}
 window.drawWinner = async function(){
 
     let numbers = await getNumbers();
